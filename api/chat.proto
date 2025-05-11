@@ -1,0 +1,21 @@
+syntax = "proto3";
+package chat;
+
+option go_package = "cu.ru/pb";
+
+message ChatMessage {
+    string login = 1;
+    string text = 2;
+    bool isError = 3;
+}
+
+message BanMessage {
+    string targetLogin = 1;
+}
+
+message Empty {}
+
+service ChatService {
+  rpc StartChat(stream ChatMessage) returns (stream ChatMessage);
+  rpc BanUser(BanMessage) returns (Empty);
+}
