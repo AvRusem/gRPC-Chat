@@ -102,6 +102,14 @@ func (s *ChatServiceDefault) ModerateMessage(clientID, message string) (bool, er
 		if err != nil {
 			return true, err
 		}
+
+		banned, err := s.chatRepository.IsBanned(clientID)
+		if err != nil {
+			return true, err
+		}
+		if banned {
+			return true, appErrors.ErrBanned
+		}
 		return true, nil
 	}
 
