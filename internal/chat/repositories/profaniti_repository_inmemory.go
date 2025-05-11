@@ -45,17 +45,13 @@ func NewProfanityRepositoryInMemory(file string) *ProfanityRepositoryInMemory {
 func (r *ProfanityRepositoryInMemory) ContainsProfanity(text string) bool {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
-	text = strings.Map(func(r rune) rune {
-		if strings.ContainsRune(".,;:!?", r) {
-			return -1
-		}
-		return r
-	}, text)
-	words := strings.Fields(strings.ToLower(text))
-	for _, word := range words {
-		if _, exists := r.profanities[word]; exists {
+
+	text = strings.ToLower(strings.Join(strings.Fields(text), " "))
+	for word, _ := range r.profanities {
+		if strings.Contains(text, word) {
 			return true
 		}
 	}
+
 	return false
 }
