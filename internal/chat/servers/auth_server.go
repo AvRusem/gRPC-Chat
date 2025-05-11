@@ -5,6 +5,7 @@ import (
 
 	"cu.ru/api/pb"
 	appErrors "cu.ru/internal/chat/errors"
+	"cu.ru/internal/chat/repositories"
 	"cu.ru/internal/chat/services"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -36,11 +37,12 @@ func (a *AuthServer) Auth(ctx context.Context, authData *pb.AuthMessage) (*pb.Au
 	}, nil
 }
 
-func getAuthService(disabled bool, _ string) services.AuthService {
+func getAuthService(disabled bool, authStorage string) services.AuthService {
 	if disabled {
 		return services.NewAuthServiceDisabled()
 	}
-	panic("getService: not implemented yet")
+	authRepo := repositories.NewAuthRepositoryInMemory(authStorage)
+	return services.NewAuthServiceEnabled(authRepo)
 }
 
 func buildAuthServer(disabled bool, authStorage string, grpcServer *grpc.Server) {
