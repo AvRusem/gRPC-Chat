@@ -47,7 +47,7 @@ func (r *ProfanityRepositoryInMemory) ContainsProfanity(text string) bool {
 	defer r.mu.RUnlock()
 
 	text = strings.ToLower(strings.Join(strings.Fields(text), " "))
-	for word, _ := range r.profanities {
+	for word := range r.profanities {
 		if strings.Contains(text, word) {
 			return true
 		}
