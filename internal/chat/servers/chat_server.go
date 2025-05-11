@@ -34,7 +34,7 @@ func (c *ChatServer) StartChat(stream pb.ChatService_StartChatServer) error {
 	}
 
 	if err := c.chatService.RegisterClient(clientID, stream); err != nil {
-		if err == appErrors.AlreadyExistsError {
+		if err == appErrors.ErrAlreadyExists {
 			return status.Error(codes.AlreadyExists, "client already exists")
 		}
 		return status.Error(codes.Internal, "failed to register client")
@@ -60,7 +60,7 @@ func (c *ChatServer) StartChat(stream pb.ChatService_StartChatServer) error {
 
 		censored, err := c.chatService.ModerateMessage(clientID, msg.GetText())
 		if err != nil {
-			if err == appErrors.BannedError {
+			if err == appErrors.ErrBanned {
 				if err := stream.Send(&pb.ChatMessage{
 					Text:    "banned",
 					IsError: true,
@@ -85,10 +85,10 @@ func (c *ChatServer) StartChat(stream pb.ChatService_StartChatServer) error {
 		}
 
 		if err := c.chatService.BroadcastMessage(clientID, msg.GetText()); err != nil {
-			if err == appErrors.NotFoundError {
+			if err == appErrors.ErrNotFound {
 				return status.Error(codes.NotFound, "client not found")
 			}
-			if err == appErrors.BannedError {
+			if err == appErrors.ErrBanned {
 				return status.Error(codes.PermissionDenied, "client is banned")
 			}
 			return status.Error(codes.Internal, "failed to broadcast message")
@@ -103,7 +103,7 @@ func (c *ChatServer) BanUser(ctx context.Context, banMessage *pb.BanMessage) (*p
 	}
 
 	if err := c.chatService.BanClient(banMessage.GetTargetLogin()); err != nil {
-		if err == appErrors.NotFoundError {
+		if err == appErrors.ErrNotFound {
 			return nil, status.Error(codes.NotFound, "user not found")
 		}
 		return nil, status.Error(codes.Internal, "failed to ban user")

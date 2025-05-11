@@ -25,7 +25,7 @@ func NewAuthServer(authService services.AuthService) *AuthServer {
 func (a *AuthServer) Auth(ctx context.Context, authData *pb.AuthMessage) (*pb.AuthResponse, error) {
 	token, err := a.authService.GenerateToken(authData.Login, authData.Password)
 	if err != nil {
-		if err == appErrors.NotAuthorizedError {
+		if err == appErrors.ErrNotAuthorized {
 			return nil, status.Error(codes.Unauthenticated, "not authorized")
 		}
 		return nil, err

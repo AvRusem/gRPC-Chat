@@ -3,8 +3,8 @@ package errors
 import "errors"
 
 var (
-	NotAuthorizedError = errors.New("not authorized")
-	NotFoundError      = errors.New("not found")
-	AlreadyExistsError = errors.New("already exists")
-	BannedError        = errors.New("user is banned")
+	ErrNotAuthorized = errors.New("not authorized")
+	ErrNotFound      = errors.New("not found")
+	ErrAlreadyExists = errors.New("already exists")
+	ErrBanned        = errors.New("user is banned")
 )

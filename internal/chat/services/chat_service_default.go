@@ -32,7 +32,7 @@ func (s *ChatServiceDefault) RegisterClient(clientID string, stream ChatStream) 
 	defer s.mu.Unlock()
 
 	if _, exists := s.clients[clientID]; exists {
-		return appErrors.AlreadyExistsError
+		return appErrors.ErrAlreadyExists
 	}
 	s.clients[clientID] = stream
 	return s.chatRepository.AddUser(clientID)
@@ -43,7 +43,7 @@ func (s *ChatServiceDefault) UnregisterClient(clientID string) error {
 	defer s.mu.Unlock()
 
 	if _, exists := s.clients[clientID]; !exists {
-		return appErrors.NotFoundError
+		return appErrors.ErrNotFound
 	}
 	delete(s.clients, clientID)
 	return nil
@@ -54,7 +54,7 @@ func (s *ChatServiceDefault) BroadcastMessage(clientID, message string) error {
 	defer s.mu.RUnlock()
 
 	if _, exists := s.clients[clientID]; !exists {
-		return appErrors.NotFoundError
+		return appErrors.ErrNotFound
 	}
 
 	banned, err := s.chatRepository.IsBanned(clientID)
@@ -62,7 +62,7 @@ func (s *ChatServiceDefault) BroadcastMessage(clientID, message string) error {
 		return err
 	}
 	if banned {
-		return appErrors.BannedError
+		return appErrors.ErrBanned
 	}
 
 	for id, stream := range s.clients {
@@ -94,7 +94,7 @@ func (s *ChatServiceDefault) ModerateMessage(clientID, message string) (bool, er
 		return true, err
 	}
 	if banned {
-		return true, appErrors.BannedError
+		return true, appErrors.ErrBanned
 	}
 
 	if s.profanityRepository.ContainsProfanity(message) {

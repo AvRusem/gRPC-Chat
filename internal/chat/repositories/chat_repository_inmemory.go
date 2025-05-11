@@ -48,7 +48,7 @@ func (r *ChatRepositoryInMemory) PunishUser(login string) error {
 		r.users[login] = user
 		return nil
 	}
-	return appErrors.NotFoundError
+	return appErrors.ErrNotFound
 }
 
 func (r *ChatRepositoryInMemory) BanUser(login string) error {
@@ -60,7 +60,7 @@ func (r *ChatRepositoryInMemory) BanUser(login string) error {
 		r.users[login] = user
 		return nil
 	}
-	return appErrors.NotFoundError
+	return appErrors.ErrNotFound
 }
 
 func (r *ChatRepositoryInMemory) IsBanned(login string) (bool, error) {
@@ -70,5 +70,5 @@ func (r *ChatRepositoryInMemory) IsBanned(login string) (bool, error) {
 	if user, exists := r.users[login]; exists {
 		return user.Banned, nil
 	}
-	return false, appErrors.NotFoundError
+	return false, appErrors.ErrNotFound
 }
